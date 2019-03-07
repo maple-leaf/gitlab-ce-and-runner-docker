@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  web:
+    image: 'gitlab/gitlab-ce:latest'
+    hostname: 'gitlab.local'
+    environment:
+        GITLAB_OMNIBUS_CONFIG: |
+          external_url 'http://gitlab.local:8123'
+          # Add any other gitlab.rb configuration here, each on its own line
+    ports:
+      - '8123:8123'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - './srv/gitlab/config:/etc/gitlab'
+      - './srv/gitlab/logs:/var/log/gitlab'
+      - './srv/gitlab/data:/var/opt/gitlab'
+ 
+  gitlab-runer:
+      image: 'gitlab/gitlab-runner:latest'
+      volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        - './srv/gitlab-runner/config:/etc/gitlab-runner'
+      extra_hosts:
+          - "gitlab.local:172.16.12.219"
